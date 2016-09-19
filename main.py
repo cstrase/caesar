@@ -15,10 +15,47 @@
 # limitations under the License.
 #
 import webapp2
+from caesar import encrypt
+
+form = """
+<form method = "post" action = "/">
+    <label>
+        Rotation Number:
+        <input type="text" name="rot_num" value="%(rot_num)s">
+    </label>
+    <br>
+    <label>
+        Text to Encrypt:
+        <input type="text" name="encrypt_box" value="%(encrypt_box)s">
+    <br>
+    <input type="submit">
+</form>
+"""
+
+
+
 
 class MainHandler(webapp2.RequestHandler):
+    def form_Writer(self, rot_num="", encrypt_box=""):
+        self.response.out.write(form % {"rot_num": rot_num,
+                                        "encrypt_box": encrypt_box})
+
     def get(self):
-        self.response.write('Hello world!')
+        self.form_Writer()
+
+    def post(self):
+        q = self.request.get("encrypt_box")
+        user_num = self.request.get("rot_num")
+        user_num = int(user_num)
+        encrypt_txt = encrypt(q, user_num)
+
+        self.form_Writer(user_num, encrypt_txt)
+        #self.response.out.write(encrypt_txt)
+        #self.response.out.write(user_num)
+
+
+
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
